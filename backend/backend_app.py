@@ -93,8 +93,11 @@ def write_json(data):
         json.dump(data, json_data, indent=4)
 
 def read_json():
-    with open(__json_file, "r", encoding="utf-8") as json_data:
-        return json.load(json_data)
+    try:
+        with open(__json_file, "r", encoding="utf-8") as json_data:
+            return json.load(json_data)
+    except FileNotFoundError:
+        return []
 
 @app.route('/api/posts/search', methods=['GET'])
 def search_post():
