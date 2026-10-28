@@ -60,6 +60,18 @@ wheels = [
 ]
 
 [[package]]
+name = "flask-swagger-ui"
+version = "5.34.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flask" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2c/c7/17f603e68eb4025c0f98a40715fd7cb48ad2d2f9e88694fc2b4e75ecb3ac/flask_swagger_ui-5.34.0.tar.gz", hash = "sha256:6ed20671d8037698f46e0cf02774efee366c137beab524b646d31a81638068eb", size = 658632, upload-time = "2026-10-19T16:01:18.004Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/bb/4059b4f93990906b811f8a24fb48b4d605af4116d104110deeeaf68bc3c0/flask_swagger_ui-5.34.0-py3-none-any.whl", hash = "sha256:63e4ecfee6345ca746c11c5341c6f2a1cbe271e518aac1659889cd3905b1110f", size = 663854, upload-time = "2026-10-19T16:01:16.066Z" },
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -139,6 +151,7 @@ source = { editable = "." }
 dependencies = [
     { name = "flask" },
     { name = "flask-cors" },
+    { name = "flask-swagger-ui" },
 ]
 
 [package.dev-dependencies]
@@ -151,6 +164,7 @@ dev = [
 requires-dist = [
     { name = "flask", specifier = ">=3.1.3" },
     { name = "flask-cors", specifier = ">=6.0.5" },
+    { name = "flask-swagger-ui", specifier = ">=5.34.0" },
 ]
 
 [package.metadata.requires-dev]
