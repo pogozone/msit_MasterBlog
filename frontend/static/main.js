@@ -48,7 +48,14 @@ function addPost() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: postTitle, content: postContent })
     })
-    .then(response => response.json())  // Parse the JSON data from the response
+    .then(response => {
+         if (!response.ok) {
+            return response.json().then(errData => {
+                throw new Error(JSON.stringify(errData));
+            });
+         }
+         return response.json();
+    })  // Parse the JSON data from the response
     .then(post => {
         console.log('Post added:', post);
         loadPosts(); // Reload the posts after adding a new one
