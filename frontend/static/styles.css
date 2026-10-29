@@ -15,7 +15,7 @@ body {
     width: 80%;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     margin: auto;
 }
 
@@ -32,7 +32,7 @@ body {
     font-size: 16px;
     border: none;
     border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.5s ease;
 }
 
@@ -97,4 +97,8 @@ body {
 
 .post button:hover {
     background-color: #cc0000;
+}
+
+#sort div {
+    margin-right: 20px;
 }

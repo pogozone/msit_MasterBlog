@@ -1,7 +1,7 @@
 // Function that runs once the window is fully loaded
 window.onload = function() {
     // Attempt to retrieve the API base URL from the local storage
-    var savedBaseUrl = localStorage.getItem('apiBaseUrl');
+    const savedBaseUrl = localStorage.getItem('apiBaseUrl');
     // If a base URL is found in local storage, load the posts
     if (savedBaseUrl) {
         document.getElementById('api-base-url').value = savedBaseUrl;
@@ -12,7 +12,7 @@ window.onload = function() {
 // Function to fetch all the posts from the API and display them on the page
 function loadPosts() {
     // Retrieve the base URL from the input field and save it to local storage
-    var baseUrl = document.getElementById('api-base-url').value;
+    const baseUrl = document.getElementById('api-base-url').value;
     localStorage.setItem('apiBaseUrl', baseUrl);
 
     // Use the Fetch API to send a GET request to the /posts endpoint
@@ -25,10 +25,7 @@ function loadPosts() {
 
             // For each post in the response, create a new post element and add it to the page
             data.forEach(post => {
-                const postDiv = document.createElement('div');
-                postDiv.className = 'post';
-                postDiv.id = `post-${post.id}`;
-                postDiv.innerHTML = HTML_post(post);
+                const postDiv = get_post_div(post)
                 postContainer.appendChild(postDiv);
             });
         })
@@ -77,6 +74,8 @@ function editPost(postId) {
 
                 postDiv.querySelector(".updateButton")
                     .addEventListener("click", () => updatePost(post.id));
+                postDiv.dataset.title = post.title ?? "";
+                postDiv.dataset.author = post.author ?? "";
 
                 postContainer.appendChild(postDiv);
 
@@ -121,10 +120,10 @@ function updatePost(postId) {
 // Function to send a POST request to the API to add a new post
 function addPost() {
     // Retrieve the values from the input fields
-    var baseUrl = document.getElementById('api-base-url').value;
-    var postTitle = document.getElementById('post-title').value;
-    var postContent = document.getElementById('post-content').value;
-    var postAuthor = document.getElementById('post-author').value;
+    const baseUrl = document.getElementById('api-base-url').value;
+    const postTitle = document.getElementById('post-title').value;
+    const postContent = document.getElementById('post-content').value;
+    const postAuthor = document.getElementById('post-author').value;
 
     // Use the Fetch API to send a POST request to the /posts endpoint
     fetch(baseUrl + '/posts', {
@@ -149,13 +148,13 @@ function addPost() {
 
 // Function to send a DELETE request to the API to delete a post
 function deletePost(postId) {
-    var baseUrl = document.getElementById('api-base-url').value;
+    const baseUrl = document.getElementById('api-base-url').value;
 
     // Use the Fetch API to send a DELETE request to the specific post's endpoint
     fetch(baseUrl + '/posts/' + postId, {
         method: 'DELETE'
     })
-    .then(response => {
+    .then(() => {
         console.log('Post deleted:', postId);
         loadPosts(); // Reload the posts after deleting one
     })
@@ -181,6 +180,7 @@ searchField.addEventListener("input", async () => {
         );
 
         if (!response.ok) {
+            // noinspection ExceptionCaughtLocallyJS
             throw new Error(`HTTP-Fehler ${response.status}`);
         }
 
@@ -195,10 +195,7 @@ searchField.addEventListener("input", async () => {
 
         // For each post in the response, create a new post element and add it to the page
         posts.forEach(post => {
-            const postDiv = document.createElement('div');
-            postDiv.className = 'post';
-            postDiv.id = `post-${post.id}`;
-            postDiv.innerHTML = HTML_post(post);
+            const postDiv = get_post_div(post)
             postContainer.appendChild(postDiv);
         });
 
@@ -208,6 +205,39 @@ searchField.addEventListener("input", async () => {
         }
     }
 });
+
+/* sort */
+let currentSortField = null;
+let sortAscending = true;
+
+function sortPosts(field) {
+    if (currentSortField === field) {
+        sortAscending = !sortAscending;
+    } else {
+        currentSortField = field;
+        sortAscending = true;
+    }
+
+    const container = document.getElementById("post-container");
+
+    const posts = Array.from(container.children).filter(post => {
+        return post.classList.contains("post")
+            && !post.hidden
+            && getComputedStyle(post).display !== "none";
+    });
+
+    posts.sort((first, second) => {
+        const comparison = (first.dataset[field] ?? "").localeCompare(
+            second.dataset[field] ?? "",
+            "de",
+            { sensitivity: "base", numeric: true }
+        );
+
+        return sortAscending ? comparison : -comparison;
+    });
+
+    posts.forEach(post => container.appendChild(post));
+}
 
 /* HTML snippets */
 const HTML_post = (post) => {
@@ -219,3 +249,13 @@ const HTML_post = (post) => {
         <div><button class="deleteButton" onclick="deletePost(${post.id})">Delete</button></div>
     `;
 };
+
+const get_post_div = (post) => {
+    const postDiv = document.createElement('div');
+    postDiv.className = 'post';
+    postDiv.id = `post-${post.id}`;
+    postDiv.innerHTML = HTML_post(post);
+    postDiv.dataset.title = post.title ?? "";
+    postDiv.dataset.author = post.author ?? "";
+    return postDiv;
+}
