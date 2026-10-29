@@ -207,6 +207,10 @@ def get_posts():
 
     this_posts = read_json()
 
+    post_id = request.args.get('post_id', '', type=int)
+    if post_id:
+        this_posts = [post for post in this_posts if post["id"] == post_id]
+
     sort = request.args.get('sort', '')
     direction = request.args.get('direction', 'asc').lower()
 

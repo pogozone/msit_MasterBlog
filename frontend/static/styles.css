@@ -76,7 +76,6 @@ body {
 
 .post button {
     position: absolute;
-    top: 10px;
     right: 10px;
     background-color: #ff4444;
     color: #fff;
@@ -84,6 +83,16 @@ body {
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.post button.editButton,
+.post button.updateButton {
+    top: 10px;
+
+}
+
+.post button.deleteButton {
+    top: 50px;
 }
 
 .post button:hover {
