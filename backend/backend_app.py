@@ -1,3 +1,5 @@
+"""Flask-API zum Lesen, Suchen und Verwalten von Blogbeiträgen."""
+
 import json
 from datetime import datetime, date
 
@@ -21,7 +23,7 @@ app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
-__json_file = "blog.json"
+__JSON_FILE = "blog.json"
 
 POSTS = [
     {"id": 1, "title": "First post", "content": "This is the first post."},
@@ -53,6 +55,7 @@ SCHEMA = {
 
 
 def validate_payload(data, schema):
+    """Prüft Pflichtfelder und Datentypen anhand des Schemas."""
     if not isinstance(data, dict):
         return "Payload muss ein JSON-Objekt sein", 400
 
@@ -88,19 +91,22 @@ def validate_payload(data, schema):
     return None, None
 
 def write_json(data):
+    """Speichert die Beiträge nach ID sortiert in der JSON-Datei."""
     data = sorted(data, key=lambda post: post["id"])
-    with open(__json_file, "w", encoding="utf-8") as json_data:
+    with open(__JSON_FILE, "w", encoding="utf-8") as json_data:
         json.dump(data, json_data, indent=4)
 
 def read_json():
+    """Liest die Beiträge oder liefert bei fehlender Datei eine leere Liste."""
     try:
-        with open(__json_file, "r", encoding="utf-8") as json_data:
+        with open(__JSON_FILE, "r", encoding="utf-8") as json_data:
             return json.load(json_data)
     except FileNotFoundError:
         return []
 
 @app.route('/api/posts/search', methods=['GET'])
 def search_post():
+    """Sucht Beiträge anhand der übergebenen Suchparameter."""
 
     this_posts = read_json()
     filtered_posts = []
@@ -138,6 +144,7 @@ def search_post():
 
 @app.route('/api/posts/<int:post_id>', methods=['PUT'])
 def update_posts(post_id):
+    """Aktualisiert einen vorhandenen Beitrag nach Prüfung der Daten."""
 
     this_posts = read_json()
 
@@ -165,6 +172,7 @@ def update_posts(post_id):
 
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 def delete_posts(post_id):
+    """Löscht einen Beitrag anhand seiner ID."""
     this_posts = read_json()
 
     has_post = [post for post in this_posts if post["id"] == post_id]
@@ -179,6 +187,7 @@ def delete_posts(post_id):
 
 @app.route('/api/posts', methods=['POST'])
 def add_posts():
+    """Erstellt einen Beitrag mit neuer ID und aktuellem Datum."""
 
     this_posts = read_json()
     data = request.json or {}
@@ -204,6 +213,7 @@ def add_posts():
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
+    """Liefert Beiträge, optional nach ID gefiltert und sortiert."""
 
     this_posts = read_json()
 
@@ -214,16 +224,32 @@ def get_posts():
     sort = request.args.get('sort', '')
     direction = request.args.get('direction', 'asc').lower()
 
-    reverse_order = (direction == 'desc')
+    reverse_order = direction == 'desc'
 
     if sort and 'title' in sort:
-        this_posts = sorted(this_posts, key=lambda post: post.get("title", ""), reverse=reverse_order)
+        this_posts = sorted(
+            this_posts,
+            key=lambda post: post.get("title", ""),
+            reverse=reverse_order
+        )
     elif sort and 'content' in sort:
-        this_posts = sorted(this_posts, key=lambda post: post.get("content", ""), reverse=reverse_order)
+        this_posts = sorted(
+            this_posts,
+            key=lambda post: post.get("content", ""),
+            reverse=reverse_order
+        )
     elif sort and 'author' in sort:
-        this_posts = sorted(this_posts, key=lambda post: post.get("author", ""), reverse=reverse_order)
+        this_posts = sorted(
+            this_posts,
+            key=lambda post: post.get("author", ""),
+            reverse=reverse_order
+        )
     elif sort and 'date' in sort:
-        this_posts = sorted(this_posts, key=lambda post: post.get("date", ""), reverse=reverse_order)
+        this_posts = sorted(
+            this_posts,
+            key=lambda post: post.get("date", ""),
+            reverse=reverse_order
+        )
     elif sort:
         return jsonify({ "error": f"{sort} ist keine gültige Sortierung"}), 400
 

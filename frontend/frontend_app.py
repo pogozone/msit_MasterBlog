@@ -1,3 +1,8 @@
+"""
+@version: v1.0
+@author: MSIT
+display and work with blog posts
+"""
 from flask import Flask, render_template
 
 app = Flask(__name__)
@@ -5,6 +10,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def home():
+    """load page"""
     return render_template("index.html")
 
 
